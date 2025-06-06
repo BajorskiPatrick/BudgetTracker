@@ -1,0 +1,106 @@
+@model IEnumerable<BudgetTracker.Models.Expense>
+
+@{
+    ViewData["Title"] = "Expenses";
+}
+
+<h1>Expenses</h1>
+
+<form asp-action="Index" method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-3">
+            <label class="form-label">Category:</label>
+            <select name="categoryFilter" asp-items="ViewBag.Categories" class="form-select">
+                <option value="">All Categories</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Payment Method:</label>
+            <select name="paymentMethodFilter" asp-items="ViewBag.PaymentMethods" class="form-select">
+                <option value="">All Methods</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label">Year:</label>
+            <select name="yearFilter" asp-items="ViewBag.Years" class="form-select">
+                <option value="">All Years</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label">Month:</label>
+            <select name="monthFilter" asp-items="ViewBag.Months" class="form-select">
+                <option value="">All Months</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary me-2">Filter</button>
+            <a asp-action="Index" class="btn btn-secondary">Reset</a>
+        </div>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PaymentMethod)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TransactionDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PaymentMethod.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TransactionDate)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ExpenseId" class="btn btn-primary">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ExpenseId" class="btn btn-primary">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ExpenseId" class="btn btn-primary">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+
+@section Scripts {
+    <script>
+        // Automatyczne wysłanie formularza przy zmianie któregoś z filtrów
+        document.querySelectorAll('select[name="categoryFilter"], select[name="paymentMethodFilter"], select[name="yearFilter"], select[name="monthFilter"]').forEach(select => {
+            select.addEventListener('change', function() {
+                // Jeśli wybrano miesiąc, ale nie wybrano roku, ustaw aktualny rok
+                if (this.name === 'monthFilter' && this.value && !document.querySelector('select[name="yearFilter"]').value) {
+                    const currentYear = new Date().getFullYear();
+                    document.querySelector('select[name="yearFilter"]').value = currentYear;
+                }
+            });
+        });
+    </script>
+}

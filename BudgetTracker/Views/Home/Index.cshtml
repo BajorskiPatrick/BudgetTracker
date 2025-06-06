@@ -1,0 +1,741 @@
+﻿@model BudgetTracker.ViewModels.DashboardViewModel
+
+@if (Context.Session.GetString("IsAdmin") == "True")
+{
+    ViewData["Title"] = "Admin Panel";
+}
+else
+{
+    ViewData["Title"] = "Dashboard";
+}
+
+
+
+@if (Context.Session.GetString("IsAdmin") == "True")
+{
+    <div class="admin-panel-container">
+        <div class="admin-panel-card">
+            <div class="admin-panel-header">
+                <h1 class="admin-panel-title">
+                    <i class="fas fa-user-shield admin-icon"></i>
+                    Welcome to Admin Panel
+                </h1>
+                <p class="admin-panel-subtitle">Manage your application users with ease</p>
+            </div>
+
+            <div class="admin-panel-content">
+                <div class="admin-features-list">
+                    <p class="features-intro">From this panel you can:</p>
+
+                    <ul class="features-list">
+                        <li class="feature-item">
+                            <i class="fas fa-user-plus feature-icon"></i>
+                            <span>Create new Users</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="fas fa-users feature-icon"></i>
+                            <span>Review existing Users</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="fas fa-user-edit feature-icon"></i>
+                            <span>Edit existing Users</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="fas fa-user-times feature-icon"></i>
+                            <span>Delete existing Users</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="admin-actions">
+                    <a asp-controller="User" asp-action="Index" class="btn btn-admin-primary">
+                        <i class="fas fa-rocket"></i> Get Started
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        /* Główne style */
+        .admin-panel-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 2rem;
+            background-color: #f8f9fa;
+        }
+    
+        .admin-panel-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+    
+        .admin-panel-card:hover {
+            transform: translateY(-5px);
+        }
+    
+        /* Nagłówek */
+        .admin-panel-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+    
+        .admin-panel-title {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+    
+        .admin-panel-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+    
+        /* Zawartość */
+        .admin-panel-content {
+            padding: 2rem;
+        }
+    
+        .features-intro {
+            font-size: 1.2rem;
+            color: #555;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+    
+        .features-list {
+            list-style: none;
+            padding: 0;
+            max-width: 500px;
+            margin: 0 auto 2rem;
+        }
+    
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+    
+        .feature-item:hover {
+            background-color: #e9ecef;
+            transform: translateX(5px);
+        }
+    
+        .feature-icon {
+            color: #764ba2;
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+    
+        /* Przyciski */
+        .admin-actions {
+            text-align: center;
+        }
+    
+        .btn-admin-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+    
+        .btn-admin-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+    
+        /* Responsywność */
+        @@media (max-width: 768px) {
+            .admin-panel-title {
+                font-size: 1.8rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+        
+            .admin-panel-subtitle {
+                font-size: 1rem;
+            }
+        
+            .admin-panel-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+
+    <!-- Dodaj Font Awesome dla ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+}
+else
+{ 
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Budget Tracker Dashboard</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+        <style>
+            .dashboard-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            .header-section {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 30px;
+                border-radius: 15px;
+                margin-bottom: 30px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            }
+
+            .welcome-guest {
+                background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+                color: #333;
+                text-align: center;
+                padding: 60px 30px;
+            }
+
+            .period-selector {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+
+            .summary-cards {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+
+            .summary-card {
+                background: white;
+                padding: 25px;
+                border-radius: 12px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+                text-align: center;
+                transition: transform 0.3s ease;
+            }
+
+            .summary-card:hover {
+                transform: translateY(-5px);
+            }
+
+            .summary-card h3 {
+                margin: 0 0 10px 0;
+                font-size: 16px;
+                color: #666;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .summary-card .amount {
+                font-size: 32px;
+                font-weight: bold;
+                margin: 0;
+            }
+
+            .income { color: #27ae60; }
+            .expense { color: #e74c3c; }
+            .balance.positive { color: #27ae60; }
+            .balance.negative { color: #e74c3c; }
+
+            .charts-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                gap: 30px;
+                margin-bottom: 30px;
+            }
+
+            .chart-container {
+                background: white;
+                padding: 25px;
+                border-radius: 12px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            }
+
+            .chart-title {
+                font-size: 18px;
+                font-weight: bold;
+                margin-bottom: 20px;
+                color: #333;
+                text-align: center;
+            }
+
+            .limits-section {
+                background: white;
+                padding: 25px;
+                border-radius: 12px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            }
+
+            .limit-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px;
+                margin: 10px 0;
+                border-radius: 8px;
+                border-left: 5px solid;
+            }
+
+            .limit-safe { 
+                background-color: #d4edda; 
+                border-left-color: #28a745;
+            }
+
+            .limit-warning { 
+                background-color: #fff3cd; 
+                border-left-color: #ffc107;
+            }
+
+            .limit-exceeded { 
+                background-color: #f8d7da; 
+                border-left-color: #dc3545;
+            }
+
+            .form-control, .btn {
+                padding: 8px 12px;
+                border-radius: 6px;
+                border: 1px solid #ddd;
+                margin: 0 5px;
+            }
+
+            .btn-primary {
+                background-color: #007bff;
+                color: white;
+                border-color: #007bff;
+                cursor: pointer;
+            }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
+
+            .no-data {
+                text-align: center;
+                color: #666;
+                font-style: italic;
+                padding: 40px;
+            }
+
+            @@media (max-width: 768px) {
+                .charts-grid {
+                    grid-template-columns: 1fr;
+                }
+                
+                .summary-cards {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="dashboard-container">
+            @if (!Model.IsUserLoggedIn)
+            {
+                <div class="header-section welcome-guest">
+                    <h1>Welcome in Budget Tracker!</h1>
+                    <p>Log in to manage your finances and see your personal dashboard with plots and expenses analyzes.</p>
+                    <a href="/Account/Login" class="btn btn-primary" style="font-size: 18px; padding: 12px 24px; margin-top: 20px; text-decoration: none; display: inline-block;">Log in</a>
+                </div>
+            }
+            else
+            {
+                <div class="header-section">
+                    <h1>Your Finance Dashboard</h1>
+                    <p>Review of Your finances for selected period</p>
+                </div>
+
+                <!-- Selektor okresu -->
+                <div class="period-selector">
+                    <form method="get" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <label>Year:</label>
+                        <select name="year" class="form-control" style="width: auto;">
+                            @foreach (var year in Model.AvailableYears)
+                            {
+                                @if (year == (Model.SelectedYear ?? DateTime.Now.Year))
+                                {
+                                    <option value="@year" selected>@year</option>
+                                }
+                                else
+                                {
+                                    <option value="@year">@year</option>
+                                }
+                            }
+                        </select>
+
+                        <label>Month:</label>
+                        <select name="month" class="form-control" style="width: auto;">
+                            @for (int i = 1; i <= 12; i++)
+                            {
+                                @if (i == (Model.SelectedMonth ?? DateTime.Now.Month))
+                                {
+                                    <option value="@i" selected>
+                                        @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i)
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@i">
+                                        @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i)
+                                    </option>
+                                }
+                            }
+                        </select>
+
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                </div>
+
+                <!-- Karty podsumowujące -->
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <h3>Incomes</h3>
+                        <p class="amount income">@Model.TotalIncome.ToString("C", new System.Globalization.CultureInfo("pl-PL"))</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Expenses</h3>
+                        <p class="amount expense">@Model.TotalExpenses.ToString("C", new System.Globalization.CultureInfo("pl-PL"))</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Balance</h3>
+                        <p class="amount balance @(Model.Balance >= 0 ? "positive" : "negative")">
+                            @Model.Balance.ToString("C", new System.Globalization.CultureInfo("pl-PL"))
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Wykresy -->
+                <div class="charts-grid">
+                    <!-- Wykres 1: Przychody vs Wydatki -->
+                    <div class="chart-container">
+                        <div class="chart-title">Incomes vs Expenses</div>
+                        <canvas id="incomeVsExpensesChart" width="400" height="300"></canvas>
+                    </div>
+
+                    <!-- Wykres 2: Wydatki według kategorii -->
+                    <div class="chart-container">
+                        <div class="chart-title">Expenses by category</div>
+                        @if (Model.ExpensesByCategory.Any())
+                        {
+                            <canvas id="expensesByCategoryChart" width="400" height="300"></canvas>
+                        }
+                        else
+                        {
+                            <div class="no-data">No data on expenses</div>
+                        }
+                    </div>
+
+                    <!-- Wykres 3: Przychody według kategorii -->
+                    <div class="chart-container">
+                        <div class="chart-title">Incomes by category</div>
+                        @if (Model.IncomesByCategory.Any())
+                        {
+                            <canvas id="incomesByCategoryChart" width="400" height="300"></canvas>
+                        }
+                        else
+                        {
+                            <div class="no-data">No data on incomes</div>
+                        }
+                    </div>
+
+                    <!-- Wykres 4: Wydatki według metod płatności -->
+                    <div class="chart-container">
+                        <div class="chart-title">Expenses by payment methods</div>
+                        @if (Model.ExpensesByPaymentMethod.Any())
+                        {
+                            <canvas id="expensesByPaymentChart" width="400" height="300"></canvas>
+                        }
+                        else
+                        {
+                            <div class="no-data">No data on payment methods</div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Sekcja limitów -->
+                @if (Model.LimitsComparison.Any())
+                {
+                    <div class="limits-section">
+                        <div class="chart-title">Use of spending limits</div>
+                        
+                        <!-- Wykres słupkowy limitów -->
+                        <div style="margin-bottom: 30px; width: 100%; overflow-x: auto;">
+                            <div style="min-width: 800px;"> <!-- Minimalna szerokość dla czytelności -->
+                                <canvas id="limitsChart" width="800" height="400"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Lista szczegółowa limitów -->
+                        @foreach (var limit in Model.LimitsComparison)
+                        {
+                            <div class="limit-item limit-@(limit.Status.ToString().ToLower())">
+                                <div>
+                                    <strong>@limit.CategoryName</strong><br>
+                                    <small>Spent: @limit.SpentAmount.ToString("C", new System.Globalization.CultureInfo("pl-PL")) from @limit.LimitAmount.ToString("C", new System.Globalization.CultureInfo("pl-PL"))</small>
+                                </div>
+                                <div style="text-align: right;">
+                                    <strong>@limit.PercentageUsed.ToString("F0")%</strong><br>
+                                    <small>
+                                        @if (limit.Status == BudgetTracker.ViewModels.LimitStatus.Safe)
+                                        {
+                                            <span style="color: #28a745;">✓ In the norm</span>
+                                        }
+                                        else if (limit.Status == BudgetTracker.ViewModels.LimitStatus.Warning)
+                                        {
+                                            <span style="color: #ffc107;">⚠ Attention</span>
+                                        }
+                                        else
+                                        {
+                                            <span style="color: #dc3545;">⚠ Exceeded!</span>
+                                        }
+                                    </small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            }
+        </div>
+
+        @if (Model.IsUserLoggedIn)
+        {
+            <script>
+                // Konfiguracja kolorów
+                const colors = {
+                    income: '#27ae60',
+                    expense: '#e74c3c',
+                    primary: ['#3498db', '#e74c3c', '#f39c12', '#9b59b6', '#1abc9c', '#34495e', '#e67e22', '#95a5a6'],
+                    success: '#27ae60',
+                    warning: '#f39c12',
+                    danger: '#e74c3c'
+                };
+
+                // 1. Wykres Przychody vs Wydatki (kolumnowy)
+                const ctx1 = document.getElementById('incomeVsExpensesChart').getContext('2d');
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Incomes', 'Expenses'],
+                        datasets: [{
+                            data: [@Model.TotalIncome, @Model.TotalExpenses],
+                            backgroundColor: [colors.income, colors.expense],
+                            borderColor: [colors.income, colors.expense],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString('pl-PL', {style: 'currency', currency: 'PLN'});
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                @if (Model.ExpensesByCategory.Any())
+                {
+                    @:// 2. Wykres wydatków według kategorii (kołowy)
+                    @:const ctx2 = document.getElementById('expensesByCategoryChart').getContext('2d');
+                    @:new Chart(ctx2, {
+                        @:type: 'doughnut',
+                        @:data: {
+                            @:labels: [@Html.Raw(string.Join(",", Model.ExpensesByCategory.Select(c => "'" + c.CategoryName + "'").ToArray()))],
+                            @:datasets: [{
+                                @:data: [@string.Join(",", Model.ExpensesByCategory.Select(c => c.Amount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)).ToArray())],
+                                @:backgroundColor: colors.primary,
+                                @:borderWidth: 2
+                            @:}]
+                        @:},
+                        @:options: {
+                            @:responsive: true,
+                            @:plugins: {
+                                @:legend: { position: 'bottom' },
+                                @:tooltip: {
+                                    @:callbacks: {
+                                        @:label: function(context) {
+                                            @:return context.label + ': ' + context.parsed.toLocaleString('pl-PL', {style: 'currency', currency: 'PLN'});
+                                        @:}
+                                    @:}
+                                @:}
+                            @:}
+                        @:}
+                    @:});
+                }
+
+                @if (Model.IncomesByCategory.Any())
+                {
+                    @:// 3. Wykres przychodów według kategorii (kołowy)
+                    @:const ctx3 = document.getElementById('incomesByCategoryChart').getContext('2d');
+                    @:new Chart(ctx3, {
+                        @:type: 'doughnut',
+                        @:data: {
+                            @:labels: [@Html.Raw(string.Join(",", Model.IncomesByCategory.Select(c => "'" + c.CategoryName + "'").ToArray()))],
+                            @:datasets: [{
+                                @:data: [@string.Join(",", Model.IncomesByCategory.Select(c => c.Amount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)).ToArray())],
+                                @:backgroundColor: ['#27ae60', '#2ecc71', '#58d68d', '#82e0aa', '#abebc6', '#d5f4e6'],
+                                @:borderWidth: 2
+                            @:}]
+                        @:},
+                        @:options: {
+                            @:responsive: true,
+                            @:plugins: {
+                                @:legend: { position: 'bottom' },
+                                @:tooltip: {
+                                    @:callbacks: {
+                                        @:label: function(context) {
+                                            @:return context.label + ': ' + context.parsed.toLocaleString('pl-PL', {style: 'currency', currency: 'PLN'});
+                                        @:}
+                                    @:}
+                                @:}
+                            @:}
+                        @:}
+                    @:});
+                }
+
+                @if (Model.ExpensesByPaymentMethod.Any())
+                {
+                    @:// 4. Wykres wydatków według metod płatności (słupkowy)
+                    @:const ctx4 = document.getElementById('expensesByPaymentChart').getContext('2d');
+                    @:new Chart(ctx4, {
+                        @:type: 'bar',
+                        @:data: {
+                            @:labels: [@Html.Raw(string.Join(",", Model.ExpensesByPaymentMethod.Select(p => "'" + p.PaymentMethodName + "'").ToArray()))],
+                            @:datasets: [{
+                                @:label: 'Expenses',
+                                @:data: [@string.Join(",", Model.ExpensesByPaymentMethod.Select(p => p.Amount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)).ToArray())],
+                                @:backgroundColor: colors.primary[1],
+                                @:borderColor: colors.primary[1],
+                                @:borderWidth: 2
+                            @:}]
+                        @:},
+                        @:options: {
+                            @:responsive: true,
+                            @:plugins: {
+                                @:legend: { display: false }
+                            @:},
+                            @:scales: {
+                                @:y: {
+                                    @:beginAtZero: true,
+                                    @:ticks: {
+                                        @:callback: function(value) {
+                                            @:return value.toLocaleString('pl-PL', {style: 'currency', currency: 'PLN'});
+                                        @:}
+                                    @:}
+                                @:}
+                            @:}
+                        @:}
+                    @:});
+                }
+
+                @if (Model.LimitsComparison.Any())
+                {
+                    @:// 5. Wykres limitów (słupkowy z kolorami)
+                    @:const ctx5 = document.getElementById('limitsChart').getContext('2d');
+                    @:const limitsData = [@string.Join(",", Model.LimitsComparison.Select(l => l.LimitAmount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)).ToArray())];
+                    @:const spentData = [@string.Join(",", Model.LimitsComparison.Select(l => l.SpentAmount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)).ToArray())];
+                    @:const statusData = [@Html.Raw(string.Join(",", Model.LimitsComparison.Select(l => "'" + l.Status.ToString() + "'").ToArray()))];
+                    
+                    @:// Dynamiczne kolory na podstawie statusu
+                    @:const limitColors = statusData.map(status => {
+                        @:switch(status) {
+                            @:case 'Safe': return colors.success;
+                            @:case 'Warning': return colors.warning;
+                            @:case 'Exceeded': return colors.danger;
+                            @:default: return colors.primary[0];
+                        @:}
+                    @:});
+
+                    @:new Chart(ctx5, {
+                        @:type: 'bar',
+                        @:data: {
+                            @:labels: [@Html.Raw(string.Join(",", Model.LimitsComparison.Select(l => "'" + l.CategoryName + "'").ToArray()))],
+                            @:datasets: [{
+                                @:label: 'Limit',
+                                @:data: limitsData,
+                                @:backgroundColor: 'rgba(52, 152, 219, 0.3)',
+                                @:borderColor: '#3498db',
+                                @:borderWidth: 2
+                            @:}, {
+                                @:label: 'Spent',
+                                @:data: spentData,
+                                @:backgroundColor: limitColors,
+                                @:borderColor: limitColors,
+                                @:borderWidth: 2
+                            @:}]
+                        @:},
+                        @:options: {
+                            @:responsive: true,
+                            @:plugins: {
+                                @:legend: { 
+                                    @:display: true,
+                                    @:position: 'top'
+                                @:},
+                                @:tooltip: {
+                                    @:callbacks: {
+                                        @:label: function(context) {
+                                            @:return context.dataset.label + ': ' + context.parsed.y.toLocaleString('pl-PL', {style: 'currency', currency: 'PLN'});
+                                        @:}
+                                    @:}
+                                @:}
+                            @:},
+                            @:scales: {
+                                @:y: {
+                                    @:beginAtZero: true,
+                                    @:ticks: {
+                                        @:callback: function(value) {
+                                            @:return value.toLocaleString('pl-PL', {style: 'currency', currency: 'PLN'});
+                                        @:}
+                                    @:}
+                                @:}
+                            @:}
+                        @:}
+                    @:});
+                }
+            </script>
+        }
+    </body>
+    </html>
+}
+
