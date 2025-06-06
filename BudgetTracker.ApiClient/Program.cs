@@ -8,10 +8,10 @@ namespace BudgetTracker.ApiClient;
 
 public class Program
 {
-    private static readonly string BaseUrl = "http://localhost:5260";
+    private static readonly string BaseUrl = "http://localhost:5260"; // Your URL
 
-    private static readonly string ApiUsername = "Nowy";
-    private static readonly string ApiToken = "042f8395f9144504ae4440d405396f1a";
+    private static readonly string ApiUsername = "admin"; // Your Username
+    private static readonly string ApiToken = ""; // Your API Token
 
     private static HttpClient _client = new HttpClient();
 

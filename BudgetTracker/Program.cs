@@ -84,9 +84,9 @@ async Task SeedInitialUser(IApplicationBuilder appBuilder)
                 var adminUser = new User
                 {
                     Username = "admin",
-                    Email = "pbajorski@student.agh.edu.pl",
-                    Name = "Patrick",
-                    Surname = "Bajorski",
+                    Email = "admin@mail.com",
+                    Name = "admin",
+                    Surname = "admin",
                     PasswordHash = HashEngine.ComputeMd5Hash("admin"),
                     RegistrationDate = DateTime.Now,
                     ApiToken = ApiTokenProvider.Generate(),
